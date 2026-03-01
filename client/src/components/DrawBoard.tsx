@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type shape = 
+type Shape = 
   |{
   type : "rectangle";
   x : number ;
@@ -12,7 +12,7 @@ type shape =
     type : "circle" ;
     x : number ;
     y : number ;
-    redius : number ;
+    radius : number ;
   };
 
 const DrawBoard: React.FC = () => {
@@ -38,7 +38,7 @@ const DrawBoard: React.FC = () => {
     ctx.strokeStyle = "white";
   }, []);
 
-  const redrawCanvas = ()=>{
+  const redrawCanvas = useCallback(()=>{
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
 
@@ -60,6 +60,11 @@ const DrawBoard: React.FC = () => {
       ctx.stroke();
     });
   }
+, [shapes]);
+
+  useEffect(()=>{
+    redrawCanvas();
+  } , [redrawCanvas]);
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
