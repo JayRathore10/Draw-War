@@ -1,11 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 
+type shape = 
+  |{
+  type : "rectangle";
+  x : number ;
+  y : number ;
+  width : number ;
+  height : number ;
+  }
+  |{
+    type : "circle" ;
+    x : number ;
+    y : number ;
+    redius : number ;
+  };
+
 const DrawBoard: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const snapshotRef = useRef<ImageData | null>(null);
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [mode, setMode] = useState<"pencil" | "rectangle" | "circle">("pencil");
   const [startPos, setStartPos] = useState<{ x: number, y: number } | null>(null);
-  const snapshotRef = useRef<ImageData | null>(null);
+  const [shapes , setShapes] = useState<Shape[]>([]);
+  const [selectedIndex , setSelectedIndex] = useState<number | null>(null);
+  const [isMoving , setIsMoving] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,6 +37,29 @@ const DrawBoard: React.FC = () => {
     ctx.lineCap = "round";
     ctx.strokeStyle = "white";
   }, []);
+
+  const redrawCanvas = ()=>{
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+
+    if(!canvas || !ctx) return ;
+
+    ctx.clearRect(0 , 0 ,canvas.width , canvas.height);
+
+    shapes.forEach((shape)=>{
+      ctx.beginPath();
+
+      if(shape.type === "rectangle"){
+        ctx.rect(shape.x , shape.y , shape.width, shape.height);
+      }
+
+      if(shape.type === "circle"){
+        ctx.arc(shape.x , shape.y , shape.radius , 0 , 2 * Math.PI);
+      }
+
+      ctx.stroke();
+    });
+  }
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
