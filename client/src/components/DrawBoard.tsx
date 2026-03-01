@@ -14,12 +14,16 @@ type HistoryState = {
   strokes: Stroke[];
 };
 
+const ERASER_SIZE = 30;
+
 const DrawBoard: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [mode, setMode] = useState<
     "rectangle" | "circle" | "pencil" | "brush" | "erase"
   >("rectangle");
+
+  const [previousMode, setPreviousMode] = useState(mode);
 
   const [shapes, setShapes] = useState<Shape[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -29,12 +33,12 @@ const DrawBoard: React.FC = () => {
   const [isMoving, setIsMoving] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
 
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(
     null
   );
 
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
     null
   );
 
@@ -47,7 +51,7 @@ const DrawBoard: React.FC = () => {
   }, [shapes, strokes]);
 
   const undo = () => {
-    if (history.length === 0) return;
+    if (!history.length) return;
     const copy = [...history];
     const last = copy.pop()!;
     setRedoStack((r) => [...r, { shapes, strokes }]);
@@ -57,7 +61,7 @@ const DrawBoard: React.FC = () => {
   };
 
   const redo = () => {
-    if (redoStack.length === 0) return;
+    if (!redoStack.length) return;
     const copy = [...redoStack];
     const last = copy.pop()!;
     setHistory((h) => [...h, { shapes, strokes }]);
@@ -84,21 +88,36 @@ const DrawBoard: React.FC = () => {
       ctx.stroke();
     });
 
-    const drawShape = (s: Shape) => {
+    const drawShape = (s: Shape, selected: boolean) => {
       ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "white";
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.strokeStyle = selected ? "yellow" : "white";
 
-      if (s.type === "rectangle") ctx.rect(s.x, s.y, s.width, s.height);
+      if (s.type === "rectangle")
+        ctx.rect(s.x, s.y, s.width, s.height);
+
       if (s.type === "circle")
         ctx.arc(s.x, s.y, s.radius, 0, 2 * Math.PI);
 
       ctx.stroke();
+
+      if (selected && s.type === "rectangle") {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(
+          s.x + s.width - 8,
+          s.y + s.height - 8,
+          8,
+          8
+        );
+      }
     };
 
-    shapes.forEach(drawShape);
-    if (previewShape) drawShape(previewShape);
-  }, [shapes, strokes, previewShape]);
+    shapes.forEach((s, i) =>
+      drawShape(s, i === selectedIndex)
+    );
+
+    if (previewShape) drawShape(previewShape, false);
+  }, [shapes, strokes, previewShape, selectedIndex]);
 
   useEffect(() => {
     redrawCanvas();
@@ -107,6 +126,7 @@ const DrawBoard: React.FC = () => {
   const getShapeAtPosition = (x: number, y: number) => {
     for (let i = shapes.length - 1; i >= 0; i--) {
       const s = shapes[i];
+
       if (s.type === "rectangle") {
         if (
           x >= s.x &&
@@ -116,58 +136,92 @@ const DrawBoard: React.FC = () => {
         )
           return i;
       }
+
       if (s.type === "circle") {
-        const dist = Math.sqrt((x - s.x) ** 2 + (y - s.y) ** 2);
-        if (dist <= s.radius) return i;
+        const dx = x - s.x;
+        const dy = y - s.y;
+        if (Math.sqrt(dx * dx + dy * dy) <= s.radius)
+          return i;
       }
     }
     return null;
   };
 
-  const getStrokeAtPosition = (x: number, y: number) => {
-    for (let i = strokes.length - 1; i >= 0; i--) {
-      for (const p of strokes[i].points) {
-        const dist = Math.sqrt((x - p.x) ** 2 + (y - p.y) ** 2);
-        if (dist < 8) return i;
-      }
-    }
-    return null;
+  const eraseAtPosition = (x: number, y: number) => {
+    const half = ERASER_SIZE / 2;
+
+    setShapes((prev) =>
+      prev.filter((s) => {
+        if (s.type === "rectangle") {
+          return !(
+            s.x < x + half &&
+            s.x + s.width > x - half &&
+            s.y < y + half &&
+            s.y + s.height > y - half
+          );
+        }
+        if (s.type === "circle") {
+          const dx = s.x - x;
+          const dy = s.y - y;
+          return Math.sqrt(dx * dx + dy * dy) > s.radius + half;
+        }
+        return true;
+      })
+    );
+
+    setStrokes((prev) =>
+      prev.filter((stroke) =>
+        !stroke.points.some(
+          (p) =>
+            p.x > x - half &&
+            p.x < x + half &&
+            p.y > y - half &&
+            p.y < y + half
+        )
+      )
+    );
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const x = e.nativeEvent.offsetX;
     const y = e.nativeEvent.offsetY;
 
-    const shapeIndex = getShapeAtPosition(x, y);
-
-    if (mode === "erase") {
-      const strokeIndex = getStrokeAtPosition(x, y);
-      if (shapeIndex !== null) {
-        saveHistory();
-        setShapes((prev) => prev.filter((_, i) => i !== shapeIndex));
-      } else if (strokeIndex !== null) {
-        saveHistory();
-        setStrokes((prev) => prev.filter((_, i) => i !== strokeIndex));
-      }
+    if (e.button === 2) {
+      setPreviousMode(mode);
+      setMode("erase");
+      saveHistory();
+      setIsDrawing(true);
+      eraseAtPosition(x, y);
       return;
     }
 
-    if (shapeIndex !== null) {
+    const shapeIndex = getShapeAtPosition(x, y);
+
+    if (shapeIndex !== null && mode !== "erase") {
       const s = shapes[shapeIndex];
-      setSelectedIndex(shapeIndex);
 
       if (
         s.type === "rectangle" &&
         x >= s.x + s.width - 10 &&
         y >= s.y + s.height - 10
       ) {
+        setSelectedIndex(shapeIndex);
         setIsResizing(true);
+        saveHistory();
         return;
       }
 
-      saveHistory();
+      setSelectedIndex(shapeIndex);
       setIsMoving(true);
       setDragOffset({ x: x - s.x, y: y - s.y });
+      saveHistory();
+      return;
+    }
+
+    if (mode === "erase") {
+      saveHistory();
+      setIsDrawing(true);
+      eraseAtPosition(x, y);
       return;
     }
 
@@ -186,6 +240,13 @@ const DrawBoard: React.FC = () => {
     const x = e.nativeEvent.offsetX;
     const y = e.nativeEvent.offsetY;
 
+    if (!isDrawing && !isMoving && !isResizing) return;
+
+    if (mode === "erase") {
+      eraseAtPosition(x, y);
+      return;
+    }
+
     if (isMoving && selectedIndex !== null && dragOffset) {
       setShapes((prev) =>
         prev.map((s, i) =>
@@ -199,22 +260,16 @@ const DrawBoard: React.FC = () => {
 
     if (isResizing && selectedIndex !== null) {
       setShapes((prev) =>
-        prev.map((s, i) => {
-          if (i !== selectedIndex) return s;
-          if (s.type === "rectangle")
-            return { ...s, width: x - s.x, height: y - s.y };
-          if (s.type === "circle") {
-            const radius = Math.sqrt((x - s.x) ** 2 + (y - s.y) ** 2);
-            return { ...s, radius };
-          }
-          return s;
-        })
+        prev.map((s, i) =>
+          i === selectedIndex && s.type === "rectangle"
+            ? { ...s, width: x - s.x, height: y - s.y }
+            : s
+        )
       );
       return;
     }
 
     if (mode === "pencil" || mode === "brush") {
-      if (!isDrawing) return;
       setStrokes((prev) => {
         const copy = [...prev];
         copy[copy.length - 1].points.push({ x, y });
@@ -223,7 +278,7 @@ const DrawBoard: React.FC = () => {
       return;
     }
 
-    if (!isDrawing || !startPos) return;
+    if (!startPos) return;
 
     if (mode === "rectangle")
       setPreviewShape({
@@ -236,7 +291,8 @@ const DrawBoard: React.FC = () => {
 
     if (mode === "circle") {
       const radius = Math.sqrt(
-        (x - startPos.x) ** 2 + (y - startPos.y) ** 2
+        (x - startPos.x) ** 2 +
+        (y - startPos.y) ** 2
       );
       setPreviewShape({
         type: "circle",
@@ -247,12 +303,14 @@ const DrawBoard: React.FC = () => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (previewShape) {
       saveHistory();
       setShapes((prev) => [...prev, previewShape]);
       setPreviewShape(null);
     }
+
+    if (e.button === 2) setMode(previousMode);
 
     setIsDrawing(false);
     setIsMoving(false);
@@ -279,6 +337,7 @@ const DrawBoard: React.FC = () => {
         width={900}
         height={550}
         style={{ border: "2px solid black", background: "#111" }}
+        onContextMenu={(e) => e.preventDefault()}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
