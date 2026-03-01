@@ -1,9 +1,10 @@
 import React, { useEffect, useRef , useState} from "react";
 
 const DrawBoard : React.FC = ()=>{
-
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing , setIsDrawing] = useState(false);
+  const [mode , setMode] = useState<"pencil" | "rectangle" | "circle">("pencil");
+  const [startPos , setStartPos] = useState<{x : number , y : number} | null> (null); 
 
   useEffect(()=>{
     const canvas = canvasRef.current ;
@@ -21,27 +22,81 @@ const DrawBoard : React.FC = ()=>{
     const ctx = canvasRef.current?.getContext("2d");
     if(!ctx) return ;
 
-    ctx.beginPath();
+    const x = e.nativeEvent.offsetX;
+    const y = e.nativeEvent.offsetY;
 
-    ctx.moveTo(e.nativeEvent.offsetX , e.nativeEvent.offsetY);
+    if(mode === "pencil"){
+      ctx.beginPath();
+      ctx.moveTo(x , y);
+    }
+    setStartPos({x , y});
     setIsDrawing(true);
   }
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) =>{
-    if(!isDrawing) return ;
+    if(!isDrawing || !startPos) return ;
     const ctx = canvasRef.current?.getContext("2d");
     if(!ctx) return;
 
-    ctx.lineTo(e.nativeEvent.offsetX , e.nativeEvent.offsetY);
-    ctx.stroke();
+    const x = e.nativeEvent.offsetX;
+    const y = e.nativeEvent.offsetY;
+
+    if(mode === "pencil"){
+      ctx.lineTo(x , y);
+      ctx.stroke();
+    }
   }
 
-  const stopDrawing = ()=>{
+  const stopDrawing = (e : React.MouseEvent<HTMLCanvasElement>)=>{
+    if(!isDrawing || !startPos) return ;
+
+    const ctx = canvasRef.current?.getContext("2d");
+    if(!ctx) return ;
+
+    const endX = e.nativeEvent.offsetX;
+    const endY = e.nativeEvent.offsetY;
+
+    if(mode === "rectangle"){
+      ctx.beginPath();
+      ctx.rect(
+        startPos.x  , 
+        startPos.y , 
+        endX - startPos.x ,
+        endY - startPos.y
+      )
+      ctx.stroke();
+    }
+
+    if(mode === "circle"){
+      const radius = Math.sqrt(
+        Math.pow(endX - startPos.x , 2) + 
+        Math.pow(endY - startPos.y , 2)
+      );
+
+      ctx.beginPath();
+      ctx.arc(startPos.x , startPos.y ,radius , 0 , 2 * Math.PI);
+      ctx.stroke();
+    }
+
     setIsDrawing(false);
+    setStartPos(null);
   }
 
   return(
     <>
+
+      <div style={{marginBottom : "10px"}}>
+        <button
+          onClick={()=> setMode("pencil")}
+        >pencil</button>
+        <button
+          onClick={()=> setMode("rectangle")}
+        >Rectangle</button>
+        <button
+          onClick={()=> setMode("circle")}
+        >Circle</button>
+      </div>
+
       <canvas 
         ref = {canvasRef}
         width={800}
