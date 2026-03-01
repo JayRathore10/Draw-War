@@ -61,7 +61,7 @@ const DrawBoard: React.FC = () => {
         ctx.rect(
           startPos.x,
           startPos.y,
-          x - startPos.y,
+          x - startPos.x,
           y - startPos.y
         );
       }
