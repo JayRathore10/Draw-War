@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/Auth.css";
 
 
@@ -6,6 +7,8 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   return (
     <div className="auth-container">
@@ -38,7 +41,9 @@ export default function Signup() {
 
         <button className="auth-button">Create Account</button>
 
-        <div className="auth-link">
+        <div className="auth-link"
+          onClick={()=>navigate("/login")}
+        >
           Already have account? Login
         </div>
       </div>

@@ -1,4 +1,4 @@
-// import DrawBoard from "./components/DrawBoard";
+import DrawBoard from "./components/DrawBoard";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import { Routes ,  Route } from "react-router-dom";
@@ -16,7 +16,10 @@ function App() {
           path="/signup"
           element={<Signup/>}
         /> 
-
+        <Route 
+          path="/draw"
+          element={<DrawBoard/>}
+        />
       </Routes>
     </>
   )
