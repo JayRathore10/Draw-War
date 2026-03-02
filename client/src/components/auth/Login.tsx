@@ -29,7 +29,7 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="auth-button">Login</button>
+        <button className="auth-button-login">Login</button>
 
         <div className="auth-link"
           onClick={()=>navigate("/signup")}

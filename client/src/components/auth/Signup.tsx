@@ -12,7 +12,7 @@ export default function Signup() {
 
   return (
     <div className="auth-container">
-      <div className="auth-card" style={{ transform: "rotate(1deg)" }}>
+      <div className="auth-card-signup" style={{ transform: "rotate(1deg)" }}>
         <h1 className="auth-title">Sign Up ✏</h1>
 
         <input

@@ -1,4 +1,4 @@
-.auth-container {
+.auth-container , .auth-container-signup {
   min-height: 100vh;
   background: #FAF9F6;
   display: flex;
@@ -7,14 +7,18 @@
   font-family: 'Caveat', cursive;
 }
 
-.auth-card {
-  background: white;
+.auth-card , .auth-card-signup {
+  background: #fff5fa;
   padding: 25px;
   width: 280px;
   border: 3px dashed #132E32;
   border-radius: 18px;
   box-shadow: 4px 4px 0px #34435E;
   transform: rotate(-1deg);
+}
+
+.auth-card-signup{
+  background: #fdfdec;
 }
 
 .auth-title {
@@ -34,7 +38,7 @@
   font-family: 'Caveat', cursive;
 }
 
-.auth-button {
+.auth-button , .auth-button-login {
   width: 100%;
   padding: 10px;
   background: #FFD6C0;
@@ -45,8 +49,12 @@
   transition: 0.2s;
 }
 
-.auth-button:hover {
+.auth-button:hover , .auth-button-login:hover {
   transform: scale(1.05) rotate(1deg);
+}
+
+.auth-button{
+  background-color: #FFD54F;
 }
 
 .auth-link {
