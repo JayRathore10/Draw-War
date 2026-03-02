@@ -64,3 +64,9 @@
   color: #34435E;
   font-size: 14px;
 }
+
+.pencil {
+  display: inline-block;
+  transform: rotate(90deg); 
+  margin-left: -13px;
+}

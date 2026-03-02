@@ -10,8 +10,10 @@ export default function Login() {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-title">Login ✏</h1>
+      <div className="auth-card" style={{ transform: "rotate(1deg)" }}>
+        <h1 className="auth-title">
+          Login <span className="pencil">✏</span>
+        </h1>
 
         <input
           className="auth-input"
@@ -32,7 +34,7 @@ export default function Login() {
         <button className="auth-button-login">Login</button>
 
         <div className="auth-link"
-          onClick={()=>navigate("/signup")}
+          onClick={() => navigate("/signup")}
         >
           Don't have account? Sign Up
         </div>

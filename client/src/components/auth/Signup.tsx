@@ -13,7 +13,9 @@ export default function Signup() {
   return (
     <div className="auth-container">
       <div className="auth-card-signup" style={{ transform: "rotate(1deg)" }}>
-        <h1 className="auth-title">Sign Up ✏</h1>
+        <h1 className="auth-title">
+          Sign Up <span className="pencil">✏</span>
+        </h1>
 
         <input
           className="auth-input"
@@ -42,7 +44,7 @@ export default function Signup() {
         <button className="auth-button">Create Account</button>
 
         <div className="auth-link"
-          onClick={()=>navigate("/login")}
+          onClick={() => navigate("/login")}
         >
           Already have account? Login
         </div>
