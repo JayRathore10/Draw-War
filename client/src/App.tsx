@@ -1,17 +1,25 @@
 // import DrawBoard from "./components/DrawBoard";
-import { useState } from "react";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import { Routes ,  Route } from "react-router-dom";
 
 function App() {
+  return(
+    <>
+      <Routes>
+        <Route
+          path="/login"
+          element={<Login/>}
+        />
 
-  const [page , setPage] = useState("login");
+        <Route 
+          path="/signup"
+          element={<Signup/>}
+        /> 
 
-  return page === "login" ? (
-    <Login onSwitch={() => setPage("signup")} />
-  ) : (
-    <Signup onSwitch={() => setPage("login")} />
-  );
+      </Routes>
+    </>
+  )
 }
 
 export default App;

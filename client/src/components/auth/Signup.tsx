@@ -1,11 +1,8 @@
 import { useState } from "react";
 import "../../styles/Auth.css";
 
-interface Props {
-  onSwitch: () => void;
-}
 
-export default function Signup({ onSwitch }: Props) {
+export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,7 +38,7 @@ export default function Signup({ onSwitch }: Props) {
 
         <button className="auth-button">Create Account</button>
 
-        <div className="auth-link" onClick={onSwitch}>
+        <div className="auth-link">
           Already have account? Login
         </div>
       </div>
