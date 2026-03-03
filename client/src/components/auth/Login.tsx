@@ -42,3 +42,11 @@ export default function Login() {
     </div>
   );
 }
+
+/**
+ * after login 
+ * go to the play game page button 
+ * local connectivity also happen
+ * where we automatically connect to the player 
+ * and then play game 
+ */
