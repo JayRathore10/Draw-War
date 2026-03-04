@@ -1,0 +1,47 @@
+.home-container {
+  min-height: 100vh;
+  background: #FAF9F6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Caveat', cursive;
+}
+
+.home-card {
+  background: #fdfdec;
+  padding: 30px;
+  width: 320px;
+  text-align: center;
+  border: 3px dashed #132E32;
+  border-radius: 18px;
+  box-shadow: 4px 4px 0px #34435E;
+  transform: rotate(-1deg);
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 15px;
+}
+
+.game-title {
+  font-size: 38px;
+  color: #132E32;
+  margin-bottom: 25px;
+}
+
+.play-button {
+  width: 100%;
+  padding: 12px;
+  background: #6BCB77;
+  border: 3px dashed #132E32;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.2s;
+}
+
+.play-button:hover {
+  background: #4CAF50;
+  transform: scale(1.05) rotate(1deg);
+}
