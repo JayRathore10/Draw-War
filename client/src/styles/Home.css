@@ -13,6 +13,10 @@
   width: 215px;
 }
 
+.home-card{
+  margin-top: -64px;  
+}
+
 .game-title {
   font-size: 85px;
   color: #132E32;
