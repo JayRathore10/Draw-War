@@ -8,9 +8,13 @@ export default function Home() {
     <div className="home-container">
       <div className="home-card">
         <h1 className="game-title">
-          <span>Draw</span>
+          <span
+            className="draw-span"
+          >Draw</span>
           <img src="/drawwar.png" alt="Draw War Logo" className="logo" />
-          <span>War</span>
+          <span
+            className="war-span"
+          >War</span>
         </h1>
         <button className="play-button" onClick={() => navigate("/play")}>
           Play

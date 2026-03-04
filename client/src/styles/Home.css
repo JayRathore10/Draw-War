@@ -23,27 +23,21 @@
   z-index: 1;
 }
 
-/* .logo {
-  width: 215px;
-} */
-
 .logo {
-  width: 200px;
+  width: 170px;
 }
 
 .home-card{
   margin-top: -64px;  
-  /* background: white ; */
 }
 
-/* .game-title {
-  font-size: 85px;
-  color: #132E32;
-  letter-spacing: 3px;
-  margin-bottom: 10px;
-  text-shadow: 4px 4px 0px #34435E;
-  margin-top: -72px;
-} */
+.draw-span{
+  margin-right: -18px;
+}
+
+.war-span{
+  margin-left: -10px;
+}
 
 .game-title {
   display: flex;
@@ -57,10 +51,9 @@
 }
 
 .play-button {
-  width: 100%;
+  width: 80%;
   padding: 10px;
   color: white;
-  /* background: #7bff50; */
   background: #5cc860;
   font-weight: bold;
   border: 3px dashed #132E32;
