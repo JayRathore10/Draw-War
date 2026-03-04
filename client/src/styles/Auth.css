@@ -14,11 +14,12 @@
   border: 3px dashed #132E32;
   border-radius: 18px;
   box-shadow: 4px 4px 0px #34435E;
-  transform: rotate(-1deg);
+  transform: rotate(1deg);
 }
 
 .auth-card-signup{
   background: #fdfdec;
+  transform: rotate(-1deg);
 }
 
 .auth-title {
