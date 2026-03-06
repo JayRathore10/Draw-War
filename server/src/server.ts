@@ -1,11 +1,8 @@
 import app from "./app";
-import { connectDB } from "./configs/db.config";
+import { connectDatabase } from "./database/drawwar.database";
 
 const PORT = process.env.PORT || 3000;
-
-// Connect DB locally 
-connectDB();
-
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
+  await connectDatabase();
   console.log(`Server running on http://localhost:${PORT}`);
 });

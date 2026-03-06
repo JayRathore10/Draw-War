@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/"  , (req : Request, res : Response)=>{
-  res.send("Hi, Jexts here!")
+  res.send("Hi , jexts here");
 })
 
 export default app;
