@@ -11,3 +11,33 @@ export const test = async(req :Request , res : Response  , next : NextFunction)=
   }
 }
 
+export const login = async(req : Request , res :Response , next : NextFunction)=>{
+  try{  
+
+  }catch(error){
+    next(error);
+  } 
+}
+
+export const signUp = async(req : Request , res : Response , next :NextFunction)=>{
+  try{
+
+  }catch(error){
+    next(error);
+  }
+}
+
+export const logOut = async(req : Request , res : Response ,next :NextFunction)=>{
+  try{
+  }catch(error){
+    next(error);
+  }
+}
+
+export const me = async(req : Request ,res : Response , next : NextFunction)=>{
+  try{
+
+  }catch(error){
+    next(error);
+  }
+}
