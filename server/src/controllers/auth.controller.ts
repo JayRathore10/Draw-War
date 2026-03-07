@@ -41,3 +41,8 @@ export const me = async(req : Request ,res : Response , next : NextFunction)=>{
     next(error);
   }
 }
+
+
+/**
+ * Task have to write logic for the auth controller 
+ */
