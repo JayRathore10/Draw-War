@@ -3,7 +3,8 @@ import { userLoginSchema, userZodSchema } from "../validation/user.validation";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { User } from "../models/user.model";
-import { JWT_SECRET ,  SALT_ROUND } from "../configs/env.config";
+import { JWT_SECRET, SALT_ROUND } from "../configs/env.config";
+import { authRequest, userPlayLoad } from "../types/authRequest.type";
 
 export const test = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -129,16 +130,41 @@ export const logOut = async (req: Request, res: Response, next: NextFunction) =>
   try {
     res.clearCookie("token");
     return res.status(200).json({
-      success : true , 
-      message : "Cookie clear successfully"
+      success: true,
+      message: "Cookie clear successfully"
     })
   } catch (error) {
     next(error);
   }
 }
 
-export const me = async (req: Request, res: Response, next: NextFunction) => {
+export const me = async (req: authRequest, res: Response, next: NextFunction) => {
   try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET as string) as userPlayLoad;
+
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found"
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      user
+    });
 
   } catch (error) {
     next(error);
