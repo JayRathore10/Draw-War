@@ -13,7 +13,7 @@ export const test = async(req :Request , res : Response  , next : NextFunction)=
 
 export const login = async(req : Request , res :Response , next : NextFunction)=>{
   try{  
-
+    
   }catch(error){
     next(error);
   } 
