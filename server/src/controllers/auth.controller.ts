@@ -127,6 +127,11 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
 
 export const logOut = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    res.clearCookie("token");
+    return res.status(200).json({
+      success : true , 
+      message : "Cookie clear successfully"
+    })
   } catch (error) {
     next(error);
   }
