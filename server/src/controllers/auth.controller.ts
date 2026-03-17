@@ -1,4 +1,9 @@
 import { Request , Response  , NextFunction} from "express";
+import { userZodSchema } from "../validation/user.validation";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { User } from "../models/user.model";
+import { JWT_SECRET } from "../configs/env.config";
 
 export const test = async(req :Request , res : Response  , next : NextFunction)=>{
   try{
@@ -13,7 +18,50 @@ export const test = async(req :Request , res : Response  , next : NextFunction)=
 
 export const login = async(req : Request , res :Response , next : NextFunction)=>{
   try{  
+    const parsed = userZodSchema.safeParse(req.body);
+
+    if(!parsed.success){
+      return res.status(400).json({
+        success : false , 
+        error : parsed.error.format()
+      })
+    }
+
+    const {email , password} = req.body;
+
+    const user =  await User.findOne({email});
+
+    if(!user){
+      return res.status(404).json({
+        success : false , 
+        message : "User not Found"
+      })
+    }
     
+    const result = await bcrypt.compare(password , user.password);
+
+    if(!result){
+      return res.status(401).json({
+        success : false , 
+        message : "User password is incorrect"
+      })
+    }
+
+  const token = jwt.sign({email} , JWT_SECRET as string);
+
+  res.cookie("token" , token ,  {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    partitioned: true
+  });
+
+  return res.status(200).json({
+    success : true , 
+    message : "Login Successfully" , 
+    user, 
+    token 
+  });
   }catch(error){
     next(error);
   } 

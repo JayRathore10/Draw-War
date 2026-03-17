@@ -5,5 +5,6 @@ dotenv.config({path : `.env.${process.env.NODE_ENV || "development"}.local`});
 export const {
   NODE_ENV ,
   MONGO_URI, 
-  FRONTEND
+  FRONTEND , 
+  JWT_SECRET
 } = process.env;
