@@ -6,5 +6,6 @@ export const {
   NODE_ENV ,
   MONGO_URI, 
   FRONTEND , 
-  JWT_SECRET
+  JWT_SECRET , 
+  SALT_ROUND
 } = process.env;

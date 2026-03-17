@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { optional, z } from "zod";
 
 export const userZodSchema = z.object({
   username: z
@@ -14,14 +14,15 @@ export const userZodSchema = z.object({
   password: z
     .string()
     .min(6, "Password must be at least 6 characters"),
-
-  profilePic: z
-    .string()
-    .url("Profile picture must be a valid URL")
-    .optional(),
-
-  bio: z
-    .string()
-    .max(150)
-    .optional()
 });
+
+export const userLoginSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email"),
+
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters"),
+
+})
