@@ -33,3 +33,34 @@ export const getAllUser = async(req : Request , res : Response  , next : NextFun
     next(error);
   }
 }
+
+export const getUserByUsername = async(req : Request , res : Response  , next : NextFunction)=>{
+  try{
+    const {username} = req.params;
+
+    if(!username){
+      return res.status(400).json({
+        success  : false , 
+        message : "params don't contain any username"
+      })
+    }
+
+    const user = await User.findOne({username});
+
+    if(!user){
+      return res.status(400).json({
+        success : false, 
+        message : "Error in finding user"
+      })
+    }
+
+    return res.status(200).json({
+      success : true , 
+      message : "User"  , 
+      user
+    })
+
+  }catch(error){
+    next(error);
+  }
+} 
