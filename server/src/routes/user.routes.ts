@@ -4,7 +4,7 @@ import { getAllUser, getUserByUsername, test } from "../controllers/user.control
 export const userRouter = Router();
 
 userRouter.get("/test" , test);
-// admin protected 
+// only admin can access 
 userRouter.get("/" , getAllUser);
 // open route 
 userRouter.get("/:username" , getUserByUsername );
