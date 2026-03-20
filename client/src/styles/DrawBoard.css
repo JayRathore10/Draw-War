@@ -1,6 +1,6 @@
 .draw-container {
   min-height: 100vh;
-  background: #0A2239;
+  /* background: #0A2239; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,7 +62,7 @@ canvas {
 
 .board-title {
   font-size: 24px;
-  color: white;
+  color: black;
   margin-bottom: 10px;
 }
 
