@@ -31,15 +31,6 @@
   background: #FFC107;
 }
 
-.canvas-wrapper {
-  border: 4px dashed #132E32;
-  border-radius: 20px;
-  box-shadow: 6px 6px 0px #34435E;
-  background: #111;
-  padding: 10px;
-  transform: rotate(-1deg);
-}
-
 canvas {
   display: block;
   border-radius: 12px;
@@ -50,6 +41,14 @@ canvas {
   display: flex;
   gap: 30px;
   margin-top: 20px;
+  flex-shrink: 0;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 700px;
 }
 
 .boards.single {
@@ -59,12 +58,6 @@ canvas {
 .boards.double {
   justify-content: space-between;
   padding: 0 40px;
-}
-
-.board {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .board-title {

@@ -348,7 +348,7 @@ const DrawBoard: React.FC = () => {
             <div className="canvas-wrapper">
               <canvas
                 ref={canvasRef}
-                width={900}
+                width={620}
                 height={550}
                 onContextMenu={(e) => e.preventDefault()}
                 onMouseDown={handleMouseDown}
@@ -364,8 +364,8 @@ const DrawBoard: React.FC = () => {
               <p className="board-title">Opponent</p>
               <div className="canvas-wrapper">
                 <canvas
-                  width={900}
-                  height={550}
+                width={620}
+                height={550}
                 />
               </div>
             </div>
