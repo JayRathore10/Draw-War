@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import "../styles/DrawBoard.css";
 
 type Shape =
   | { type: "rectangle"; x: number; y: number; width: number; height: number }
@@ -37,6 +38,8 @@ const DrawBoard: React.FC = () => {
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(
     null
   );
+
+  const [showOpponent, setShowOpponent] = useState(false);
 
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
     null
@@ -322,27 +325,54 @@ const DrawBoard: React.FC = () => {
 
   return (
     <>
-      <div style={{ marginBottom: 10 }}>
-        <button onClick={() => setMode("rectangle")}>Rectangle</button>
-        <button onClick={() => setMode("circle")}>Circle</button>
-        <button onClick={() => setMode("pencil")}>Pencil</button>
-        <button onClick={() => setMode("brush")}>Brush</button>
-        <button onClick={() => setMode("erase")}>Eraser</button>
-        <button onClick={undo}>Undo</button>
-        <button onClick={redo}>Redo</button>
-      </div>
+      <div className="draw-container">
+        <div className="toolbar">
+          <button className="tool-button" onClick={() => setMode("rectangle")}>Rectangle</button>
+          <button className="tool-button" onClick={() => setMode("circle")}>Circle</button>
+          <button className="tool-button" onClick={() => setMode("pencil")}>Pencil</button>
+          <button className="tool-button" onClick={() => setMode("brush")}>Brush</button>
+          <button className="tool-button" onClick={() => setMode("erase")}>Eraser</button>
+          <button className="tool-button" onClick={undo}>Undo</button>
+          <button className="tool-button" onClick={redo}>Redo</button>
+          <button
+            className="tool-button"
+            onClick={() => setShowOpponent((prev) => !prev)}
+          >
+            {showOpponent ? "Hide Opponent" : "Show Opponent Board"}
+          </button>
+        </div>
+        <div className={showOpponent ? "boards double" : "boards single"}>
 
-      <canvas
-        ref={canvasRef}
-        width={900}
-        height={550}
-        style={{ border: "2px solid black", background: "#111" }}
-        onContextMenu={(e) => e.preventDefault()}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      />
+          <div className="board">
+            <p className="board-title">You</p>
+            <div className="canvas-wrapper">
+              <canvas
+                ref={canvasRef}
+                width={900}
+                height={550}
+                onContextMenu={(e) => e.preventDefault()}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              />
+            </div>
+          </div>
+
+          {showOpponent && (
+            <div className="board">
+              <p className="board-title">Opponent</p>
+              <div className="canvas-wrapper">
+                <canvas
+                  width={900}
+                  height={550}
+                />
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
     </>
   );
 };

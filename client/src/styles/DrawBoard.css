@@ -1,0 +1,82 @@
+.draw-container {
+  min-height: 100vh;
+  background: #0A2239;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Caveat', cursive;
+  padding-top: 20px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tool-button {
+  padding: 10px 16px;
+  background: #FFD54F;
+  border: 3px dashed #132E32;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tool-button:hover {
+  transform: scale(1.08) rotate(1deg);
+  background: #FFC107;
+}
+
+.canvas-wrapper {
+  border: 4px dashed #132E32;
+  border-radius: 20px;
+  box-shadow: 6px 6px 0px #34435E;
+  background: #111;
+  padding: 10px;
+  transform: rotate(-1deg);
+}
+
+canvas {
+  display: block;
+  border-radius: 12px;
+}
+
+.boards {
+  width: 100%;
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.boards.single {
+  justify-content: center;
+}
+
+.boards.double {
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board-title {
+  font-size: 24px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.canvas-wrapper {
+  border: 4px dashed #132E32;
+  border-radius: 20px;
+  box-shadow: 6px 6px 0px #34435E;
+  background: #111;
+  padding: 10px;
+}
