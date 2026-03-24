@@ -4,6 +4,7 @@ import Signup from "./components/auth/Signup";
 import Home from "./components/Home";
 import { Routes ,  Route } from "react-router-dom";
 import axios from "axios";
+import { socket } from "./socket/socket";
 import { useEffect } from "react";
 
 function App() {
@@ -18,6 +19,22 @@ function App() {
       }
     }
     fetchJexts();
+  } , []);
+
+
+  useEffect(()=>{
+    socket.connect();
+
+    const handleConnect = ()=>{
+      console.log("Connected:" , socket.id);
+    };
+
+    socket.on("connect" , handleConnect);
+
+    return ()=>{
+      socket.off("connect" , handleConnect);
+      socket.disconnect();
+    }
   } , []);
 
   return(
