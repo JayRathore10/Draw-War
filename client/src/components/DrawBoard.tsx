@@ -16,7 +16,6 @@ type HistoryState = {
   strokes: Stroke[];
 };
 
-const ROOM_ID = "room-1";
 const ERASER_SIZE = 30;
 
 const DrawBoard: React.FC = () => {
@@ -47,6 +46,47 @@ const DrawBoard: React.FC = () => {
   const [redoStack, setRedoStack] = useState<HistoryState[]>([]);
 
   const [showOpponent, setShowOpponent] = useState(true);
+
+  const [roomId, setRoomId] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    socket.connect();
+
+    socket.on("connect", () => {
+      console.log("Connected:", socket.id);
+    });
+
+    socket.on("waiting", (msg) => {
+      console.log(msg.message);
+    });
+
+    socket.on("match-found", ({ roomId }) => {
+      console.log("Match found:", roomId);
+      setRoomId(roomId);
+    });
+
+    socket.on("opponent-draw", (data) => {
+      console.log("Opponent drawing:", data);
+    });
+
+    socket.on("opponent-clear", () => {
+      console.log("Opponent cleared board");
+    });
+
+    socket.on("opponent-left", () => {
+      console.log("Opponent left");
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("waiting");
+      socket.off("match-found");
+      socket.off("opponent-draw");
+      socket.off("opponent-clear");
+      socket.off("opponent-left");
+    };
+  }, []);
 
   const saveHistory = () => {
     setHistory((prev) => [...prev, { shapes, strokes }]);
@@ -169,7 +209,7 @@ const DrawBoard: React.FC = () => {
   }, [strokes, shapes, previewShape, selectedIndex]);
 
   useEffect(() => {
-    socket.emit("join-room", ROOM_ID);
+    socket.emit("join-room", roomId);
 
     socket.on("opponent-draw", (stroke: Stroke) => {
       opponentStrokes.current.push(stroke);
@@ -183,7 +223,7 @@ const DrawBoard: React.FC = () => {
       socket.off("opponent-draw");
       socket.off("opponent-clear");
     };
-  }, []);
+  }, [roomId]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const x = e.nativeEvent.offsetX;
