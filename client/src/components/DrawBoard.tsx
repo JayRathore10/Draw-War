@@ -211,7 +211,7 @@ const DrawBoard: React.FC = () => {
   useEffect(() => {
     socket.emit("join-room", roomId);
 
-    socket.on("opponent-draw", (stroke: Stroke) => {
+    socket.on("opponent-draw", (stroke: Stroke) => {  
       opponentStrokes.current.push(stroke);
     });
 
