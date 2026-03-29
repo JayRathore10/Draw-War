@@ -1,20 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { socket } from "../socket/socket";
+import type { Shape, Stroke, HistoryState } from
+  "../utils/types";
+import { Toolbar } from "./Toolbar";
 import "../styles/DrawBoard.css";
-
-type Shape =
-  | { type: "rectangle"; x: number; y: number; width: number; height: number }
-  | { type: "circle"; x: number; y: number; radius: number };
-
-type Stroke = {
-  type: "pencil" | "brush";
-  points: { x: number; y: number }[];
-};
-
-type HistoryState = {
-  shapes: Shape[];
-  strokes: Stroke[];
-};
 
 const ERASER_SIZE = 30;
 
@@ -22,7 +11,8 @@ const DrawBoard: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const opponentCanvasRef = useRef<HTMLCanvasElement | null>(null);
   // const opponentStrokes = useRef<Stroke[]>([]);
-  const [opponentStrokes, setOpponentStrokes] = useState<Stroke[]>([]);
+
+  const [, setOpponentStrokes] = useState<Stroke[]>([]);
 
   const [mode, setMode] = useState<
     "rectangle" | "circle" | "pencil" | "brush" | "erase"
@@ -432,20 +422,38 @@ const DrawBoard: React.FC = () => {
     setDragOffset(null);
   };
 
+  const getCanvasImage = (canvas: HTMLCanvasElement | null) => {
+    if (!canvas) return null;
+    return canvas.toDataURL("image/png");
+  };
+
+  const captureBothCanvases = () => {
+    const myCanvas = canvasRef.current;
+    const opponentCanvas = opponentCanvasRef.current;
+
+    const myImage = getCanvasImage(myCanvas);
+    const opponentImage = getCanvasImage(opponentCanvas);
+
+    console.log(":", myImage);
+    console.log("Opponent Image:", opponentImage);
+
+    return { myImage, opponentImage };
+  };
+
+  const toggleOpponent = () => {
+    setShowOpponent(prev => !prev);
+  };
+
   return (
     <div className="draw-container">
-      <div className="toolbar">
-        <button className="tool-button" onClick={() => setMode("rectangle")}>Rectangle</button>
-        <button className="tool-button" onClick={() => setMode("circle")}>Circle</button>
-        <button className="tool-button" onClick={() => setMode("pencil")}>Pencil</button>
-        <button className="tool-button" onClick={() => setMode("brush")}>Brush</button>
-        <button className="tool-button" onClick={() => setMode("erase")}>Eraser</button>
-        <button className="tool-button" onClick={undo}>Undo</button>
-        <button className="tool-button" onClick={redo}>Redo</button>
-        <button className="tool-button" onClick={() => setShowOpponent(p => !p)}>
-          {showOpponent ? "Hide Opponent" : "Show Opponent"}
-        </button>
-      </div>
+
+      <Toolbar
+        setMode={setMode}
+        undo={undo}
+        redo={redo}
+        showOpponent={showOpponent}
+        toggleOpponent={toggleOpponent}
+      />
 
       <div className={showOpponent ? "boards double" : "boards single"}>
         <div className="board">
