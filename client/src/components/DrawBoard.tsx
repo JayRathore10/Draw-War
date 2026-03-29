@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { socket } from "../socket/socket";
-import type { Shape, Stroke, HistoryState } from
+import type { Shape, Stroke} from
   "../utils/types";
 import { Toolbar } from "./Toolbar";
+import { useHistory } from "../hooks/useHistory";
 import "../styles/DrawBoard.css";
 
 const ERASER_SIZE = 30;
@@ -33,8 +34,8 @@ const DrawBoard: React.FC = () => {
 
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
 
-  const [history, setHistory] = useState<HistoryState[]>([]);
-  const [redoStack, setRedoStack] = useState<HistoryState[]>([]);
+//   const [history, setHistory] = useState<HistoryState[]>([]);
+// const [redoStack, setRedoStack] = useState<HistoryState[]>([]);  
 
   const [showOpponent, setShowOpponent] = useState(true);
   const [roomId, setRoomId] = useState<string | null>(null);
@@ -157,28 +158,32 @@ const DrawBoard: React.FC = () => {
     }
   }, [roomId]);
 
-  const saveHistory = () => {
-    setHistory((prev) => [...prev, { shapes, strokes }]);
-    setRedoStack([]);
-  };
+  const {saveHistory, undo , redo }  =  useHistory(
+    shapes , strokes , setShapes , setStrokes
+  );
 
-  const undo = () => {
-    if (!history.length) return;
-    const last = history[history.length - 1];
-    setRedoStack((r) => [...r, { shapes, strokes }]);
-    setShapes(last.shapes);
-    setStrokes(last.strokes);
-    setHistory((h) => h.slice(0, -1));
-  };
+  // const saveHistory = () => {
+  //   setHistory((prev) => [...prev, { shapes, strokes }]);
+  //   setRedoStack([]);
+  // };
 
-  const redo = () => {
-    if (!redoStack.length) return;
-    const last = redoStack[redoStack.length - 1];
-    setHistory((h) => [...h, { shapes, strokes }]);
-    setShapes(last.shapes);
-    setStrokes(last.strokes);
-    setRedoStack((r) => r.slice(0, -1));
-  };
+  // const undo = () => {
+  //   if (!history.length) return;
+  //   const last = history[history.length - 1];
+  //   setRedoStack((r) => [...r, { shapes, strokes }]);
+  //   setShapes(last.shapes);
+  //   setStrokes(last.strokes);
+  //   setHistory((h) => h.slice(0, -1));
+  // };
+
+  // const redo = () => {
+  //   if (!redoStack.length) return;
+  //   const last = redoStack[redoStack.length - 1];
+  //   setHistory((h) => [...h, { shapes, strokes }]);
+  //   setShapes(last.shapes);
+  //   setStrokes(last.strokes);
+  //   setRedoStack((r) => r.slice(0, -1));
+  // };
 
   const getShapeAt = (x: number, y: number) => {
     for (let i = shapes.length - 1; i >= 0; i--) {
