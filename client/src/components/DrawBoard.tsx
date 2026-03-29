@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { socket } from "../socket/socket";
-import type { Shape, Stroke} from
+import type { Shape, Stroke } from
   "../utils/types";
 import { Toolbar } from "./Toolbar";
 import { useHistory } from "../hooks/useHistory";
+import { useSocket } from "../hooks/useSocket";
 import "../styles/DrawBoard.css";
 
 const ERASER_SIZE = 30;
@@ -13,7 +13,7 @@ const DrawBoard: React.FC = () => {
   const opponentCanvasRef = useRef<HTMLCanvasElement | null>(null);
   // const opponentStrokes = useRef<Stroke[]>([]);
 
-  const [, setOpponentStrokes] = useState<Stroke[]>([]);
+  const [opponentStrokes, setOpponentStrokes] = useState<Stroke[]>([]);
 
   const [mode, setMode] = useState<
     "rectangle" | "circle" | "pencil" | "brush" | "erase"
@@ -34,156 +34,15 @@ const DrawBoard: React.FC = () => {
 
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
 
-//   const [history, setHistory] = useState<HistoryState[]>([]);
-// const [redoStack, setRedoStack] = useState<HistoryState[]>([]);  
-
   const [showOpponent, setShowOpponent] = useState(true);
-  const [roomId, setRoomId] = useState<string | null>(null);
 
-  const currentOpponentStroke = useRef<Stroke | null>(null);
+  const { emitDraw, emitDrawEnd } = useSocket({
+    setOpponentStrokes,
+  });
 
-  useEffect(() => {
-    socket.connect();
-
-    socket.on("connect", () => {
-      console.log("Connected:", socket.id);
-    });
-
-    socket.on("waiting", (msg) => {
-      console.log(msg.message);
-    });
-
-    socket.on("match-found", ({ roomId }) => {
-      console.log("Match found:", roomId);
-      setRoomId(roomId);
-    });
-
-    socket.on("opponent-draw", (data) => {
-      console.log("Opponent drawing:", data);
-    });
-
-    socket.on("opponent-clear", () => {
-      console.log("Opponent cleared board");
-    });
-
-    socket.on("opponent-left", () => {
-      console.log("Opponent left");
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("waiting");
-      socket.off("match-found");
-      socket.off("opponent-draw");
-      socket.off("opponent-clear");
-      socket.off("opponent-left");
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   const canvas = opponentCanvasRef.current;
-  //   const ctx = canvas?.getContext("2d");
-  //   if (!ctx || !canvas) return;
-
-  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //   ctx.lineCap = "round";
-
-  //   opponentStrokes.forEach((stroke) => {
-  //     ctx.beginPath();
-  //     ctx.lineWidth = stroke.type === "brush" ? 8 : 2;
-  //     ctx.strokeStyle = "white";
-
-  //     stroke.points.forEach((p, i) =>
-  //       i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)
-  //     );
-
-  //     ctx.stroke();
-  //   });
-  // }, [opponentStrokes]);
-
-  useEffect(() => {
-    socket.on("opponent-draw", (data: { type: "pencil" | "brush"; point: { x: number; y: number } }) => {
-      setOpponentStrokes((prev) => {
-        const updated = [...prev];
-
-        if (!currentOpponentStroke.current) {
-          const newStroke = {
-            type: data.type,
-            points: [data.point],
-          };
-          currentOpponentStroke.current = newStroke;
-          updated.push(newStroke);
-        } else {
-          currentOpponentStroke.current.points.push(data.point);
-        }
-
-        return [...updated];
-      });
-    });
-
-    socket.on("opponent-end", () => {
-      currentOpponentStroke.current = null;
-    });
-
-    socket.on("opponent-clear", () => {
-      setOpponentStrokes([]);
-      currentOpponentStroke.current = null;
-    });
-
-    return () => {
-      socket.off("opponent-draw");
-      socket.off("opponent-end");
-      socket.off("opponent-clear");
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on("opponent-draw", (data: Stroke) => {
-      setOpponentStrokes((prev) => [...prev, data]);
-    });
-
-    socket.on("opponent-clear", () => {
-      setOpponentStrokes([]);
-    });
-
-    return () => {
-      socket.off("opponent-draw");
-      socket.off("opponent-clear");
-    };
-  }, []);
-
-  useEffect(() => {
-    if (roomId) {
-      socket.emit("join-room", roomId);
-    }
-  }, [roomId]);
-
-  const {saveHistory, undo , redo }  =  useHistory(
-    shapes , strokes , setShapes , setStrokes
+  const { saveHistory, undo, redo } = useHistory(
+    shapes, strokes, setShapes, setStrokes
   );
-
-  // const saveHistory = () => {
-  //   setHistory((prev) => [...prev, { shapes, strokes }]);
-  //   setRedoStack([]);
-  // };
-
-  // const undo = () => {
-  //   if (!history.length) return;
-  //   const last = history[history.length - 1];
-  //   setRedoStack((r) => [...r, { shapes, strokes }]);
-  //   setShapes(last.shapes);
-  //   setStrokes(last.strokes);
-  //   setHistory((h) => h.slice(0, -1));
-  // };
-
-  // const redo = () => {
-  //   if (!redoStack.length) return;
-  //   const last = redoStack[redoStack.length - 1];
-  //   setHistory((h) => [...h, { shapes, strokes }]);
-  //   setShapes(last.shapes);
-  //   setStrokes(last.strokes);
-  //   setRedoStack((r) => r.slice(0, -1));
-  // };
 
   const getShapeAt = (x: number, y: number) => {
     for (let i = shapes.length - 1; i >= 0; i--) {
@@ -282,6 +141,27 @@ const DrawBoard: React.FC = () => {
     }
   }, [strokes, shapes, previewShape, selectedIndex]);
 
+  useEffect(() => {
+    const canvas = opponentCanvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx || !canvas) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineCap = "round";
+
+    opponentStrokes.forEach((stroke) => {
+      ctx.beginPath();
+      ctx.lineWidth = stroke.type === "brush" ? 8 : 2;
+      ctx.strokeStyle = "white";
+
+      stroke.points.forEach((p, i) =>
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)
+      );
+
+      ctx.stroke();
+    });
+  }, [opponentStrokes]);
+
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const x = e.nativeEvent.offsetX;
@@ -376,15 +256,7 @@ const DrawBoard: React.FC = () => {
         const last = copy[copy.length - 1];
         const point = { x, y };
         last.points.push(point);
-        if (roomId) {
-          socket.emit("draw", {
-            roomId,
-            data: {
-              type: mode,
-              points: point,
-            },
-          });
-        }
+        emitDraw(mode, point);
         return copy;
       });
       return;
@@ -415,8 +287,8 @@ const DrawBoard: React.FC = () => {
     }
 
     if (e.button === 2) setMode(previousMode);
-    if (roomId && (mode === "pencil" || mode === "brush")) {
-      socket.emit("draw-end", { roomId });
+    if (mode === "pencil" || mode === "brush") {
+      emitDrawEnd();
     }
 
     setIsDrawing(false);
