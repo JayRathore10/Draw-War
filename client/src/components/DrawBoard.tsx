@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { captureOwnerStack, useEffect, useRef, useState } from "react";
 import type { Shape, Stroke } from
   "../utils/types";
 import { Toolbar } from "./Toolbar";
@@ -316,6 +316,17 @@ const DrawBoard: React.FC = () => {
 
     return { myImage, opponentImage };
   };
+
+  const handleCompare = async()=>{
+    const {myImage , opponentImage} = captureBothCanvases();
+    const roundId = `round_${Date.now()}`;
+
+    const player1Image = `${roundId}_p1.png`;
+    const player2Image = `${roundId}_p2.png`;
+
+    console.log(player1Image , player2Image); 
+    console.log(myImage , opponentImage);
+  }
 
   const toggleOpponent = () => {
     setShowOpponent(prev => !prev);
