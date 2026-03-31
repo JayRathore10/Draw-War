@@ -5,13 +5,15 @@ type Props = {
   redo: () => void;
   showOpponent: boolean;
   toggleOpponent: () => void;
+  handleCompare : () => void;
 };
 export const Toolbar : React.FC<Props> = ({
   setMode  , 
   undo , 
   redo , 
   showOpponent  , 
-  toggleOpponent 
+  toggleOpponent , 
+  handleCompare
 }) =>{
   return (
         <div className="toolbar">
@@ -25,6 +27,7 @@ export const Toolbar : React.FC<Props> = ({
         <button className="tool-button" onClick={toggleOpponent}>
           {showOpponent ? "Hide Opponent" : "Show Opponent"}
         </button>
+        <button className="tool-button" onClick={handleCompare}>Compare</button>
       </div>
   )
 }

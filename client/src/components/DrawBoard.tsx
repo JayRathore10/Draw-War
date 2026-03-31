@@ -1,6 +1,6 @@
-import React, { captureOwnerStack, useEffect, useRef, useState } from "react";
-import type { Shape, Stroke } from
-  "../utils/types";
+import React, { useEffect, useRef, useState } from "react";
+import type { Shape, Stroke } from "../utils/types";
+import axios from "axios";
 import { Toolbar } from "./Toolbar";
 import { useHistory } from "../hooks/useHistory";
 import { useSocket } from "../hooks/useSocket";
@@ -326,6 +326,16 @@ const DrawBoard: React.FC = () => {
 
     console.log(player1Image , player2Image); 
     console.log(myImage , opponentImage);
+
+    const response = await axios.post(`http://localhost:3000/`, {
+      roundId , 
+      word : "car" , 
+      player1ImageName : player1Image ,
+      player2ImageName : player2Image  , 
+      player1ImageBase64 : myImage , 
+      player2ImageBase64 : opponentImage
+    }); 
+    console.log(response);
   }
 
   const toggleOpponent = () => {
@@ -341,6 +351,7 @@ const DrawBoard: React.FC = () => {
         redo={redo}
         showOpponent={showOpponent}
         toggleOpponent={toggleOpponent}
+        handleCompare={handleCompare}
       />
 
       <div className={showOpponent ? "boards double" : "boards single"}>
