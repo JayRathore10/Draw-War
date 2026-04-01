@@ -12,8 +12,15 @@ export const compareImages = async(req : Request, res : Response , next : NextFu
       player2Base64 
     } = req.body;
 
+    if(!roundId || !player1Base64 || !player2Base64 || !player1ImageName || !player2ImageName){
+      return res.status(400).json({
+        success : false , 
+        messsage : "Some data entries are missing" ,
+      });
+    }
+
     res.json({
-      success : true
+      success : true 
     })
 
   }catch(error){

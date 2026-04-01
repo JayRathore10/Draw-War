@@ -368,7 +368,7 @@ const DrawBoard: React.FC = () => {
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
             />
-          </div>
+          </div>``
         </div>
 
         {showOpponent && (
