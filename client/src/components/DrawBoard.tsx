@@ -327,7 +327,7 @@ const DrawBoard: React.FC = () => {
     console.log(player1Image , player2Image); 
     console.log(myImage , opponentImage);
 
-    const response = await axios.post(`http://localhost:3000/`, {
+    const response = await axios.post(`http://localhost:3000/api/v1/images/compare`, {
       roundId , 
       word : "car" , 
       player1ImageName : player1Image ,

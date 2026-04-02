@@ -6,20 +6,21 @@ export const compareImages = async(req : Request, res : Response , next : NextFu
   try{
     const {
       roundId , 
+      word , 
       player1ImageName , 
       player2ImageName , 
-      player1Base64 , 
-      player2Base64 
+      player1ImageBase64 , 
+      player2ImageBase64 
     } = req.body;
 
-    if(!roundId || !player1Base64 || !player2Base64 || !player1ImageName || !player2ImageName){
+    if (!roundId || !word ||  !player1ImageBase64 || !player2ImageBase64 || !player1ImageName || !player2ImageName){
       return res.status(400).json({
         success : false , 
         messsage : "Some data entries are missing" ,
       });
     }
 
-    const uploadDir = path.join(__dirname , "uploads");
+    const uploadDir = path.join(__dirname, "..", "public", "uploads");
 
     if(!fs.existsSync(uploadDir)){
       fs.mkdirSync(uploadDir);
@@ -30,8 +31,8 @@ export const compareImages = async(req : Request, res : Response , next : NextFu
       return Buffer.from(data , "base64");
     };
 
-    const player1Buffer = base64ToBuffer(player1Base64);
-    const player2Buffer = base64ToBuffer(player2Base64);
+    const player1Buffer = base64ToBuffer(player1ImageBase64);
+    const player2Buffer = base64ToBuffer(player2ImageBase64);
 
     const player1Path = path.join(uploadDir , player1ImageName);
     const player2Path = path.join(uploadDir , player2ImageName);

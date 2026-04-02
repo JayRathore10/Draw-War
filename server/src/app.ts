@@ -4,6 +4,7 @@ import { FRONTEND } from "./configs/env.config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { userRouter } from "./routes/user.routes";
+import { imageRouter } from "./routes/image.routes";
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(cookieParser());
 
 app.use( "/api/v1/auth" ,  authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/image" , );
+app.use("/api/v1/images" , imageRouter);
 
 app.get("/"  , (req : Request, res : Response)=>{
   res.send("Hi , jexts here");
