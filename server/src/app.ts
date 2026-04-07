@@ -27,3 +27,11 @@ app.get("/"  , (req : Request, res : Response)=>{
 })
 
 export default app;
+
+/**
+ * 
+ * Make sure the image save  in proper png formate and i have access to open them easily 
+ * and add the dummy ai model to understand the basic comaparison 
+ * 
+ * 
+ */
